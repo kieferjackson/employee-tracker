@@ -23,12 +23,14 @@ function displayMenuOptions()
         switch(table_to_query)
         {
             case 'employee':
-                console.log('Querying employee table data...');
+                console.log('Querying employee table data...\n');
                 // Preset Search Queries
                 const sq_employee = 'employee.id, employee.first_name, employee.last_name';
-                const sq_role = 'role.title, role.salary'
+                const sq_role = 'role.title, role.salary';
+                const jq_role = 'JOIN role ON employee.role_id = role.id';
+                const jq_department = 'JOIN department ON role.department_id = department.id';
 
-                employees_db.query(`SELECT ${sq_employee}, ${sq_role} FROM employee JOIN role ON employee.role_id = role.id`, (error, results) =>
+                employees_db.query(`SELECT ${sq_employee}, ${sq_role} FROM employee ${jq_role} ${jq_department}`, (error, results) =>
                     {
                         error ? console.log(error) : console.table(results);
                     }
@@ -36,10 +38,23 @@ function displayMenuOptions()
                 break;
 
             case 'role':
-                
+                console.log('Querying role table data...\n');
+
+                employees_db.query(`SELECT id, title, salary FROM role`, (error, results) =>
+                    {
+                        error ? console.log(error) : console.table(results);
+                    }
+                );
                 break;
 
             case 'department':
+                console.log('Querying department table data...\n');
+
+                employees_db.query(`SELECT id, name FROM department`, (error, results) =>
+                    {
+                        error ? console.log(error) : console.table(results);
+                    }
+                );
                 break;
         }
     }
@@ -81,8 +96,6 @@ function displayMenuOptions()
             // Option for Updating Employee Role
             case 'Update Employee Role': qupdateRole('employee'); break;
         }
-
-        displayMenuOptions();
     });
 }
 

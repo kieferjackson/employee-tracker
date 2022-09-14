@@ -47,7 +47,7 @@ function displayMenuOptions()
 
 function addEmployee()
 {
-    // Array containing all main menu options
+    // Array containing all questions for adding a new employee
     const add_employee_questions = 
     [
         // Employee First Name
@@ -83,12 +83,45 @@ function addEmployee()
 
 function addRole()
 {
+    // Array containing all questions for adding a new role
+    const add_role_questions = 
+    [
+        // Role Title
+        {
+            type: 'input',
+            message: "What is the role's title?",
+            name: 'title'
+        },
+        // Role Salary
+        {
+            type: 'input',
+            message: "What is the role's annual salary?",
+            name: 'salary'
+        },
+        // Role Department
+        {
+            type: 'list',
+            message: 'Which department does the role belong to?',
+            choices: qsql.get_role_titles(),
+            name: 'role_department'
+        }
+    ];
 
     qsql.qadd('role');
 }
 
 function addDepartment()
 {
+    // Array containing all questions for adding a new department
+    const add_role_questions = 
+    [
+        // Department Name
+        {
+            type: 'input',
+            message: "What is the department's name",
+            name: 'name'
+        }
+    ];
 
     qsql.qadd('department')
 }

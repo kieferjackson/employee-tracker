@@ -28,32 +28,59 @@ function get_table_data (table_to_query)
             const jq_role = 'JOIN role ON employee.role_id = role.id';
             const jq_department = 'JOIN department ON role.department_id = department.id';
 
-            employees_db.query(`SELECT ${sq_employee}, ${sq_role} FROM employee ${jq_role} ${jq_department}`, (error, results) =>
-                {
-                    error ? console.log(error) : console.log(results);
-                }
-            );
-            break;
+            return new Promise( (resolve, reject) =>
+            {
+                employees_db.query(`SELECT ${sq_employee}, ${sq_role} FROM employee ${jq_role} ${jq_department}`, (error, results) =>
+                    {
+                        if (error) 
+                        {
+                            console.log(error);
+                            return reject(error);
+                        }
+
+                        console.log(results);
+                        return resolve(results);
+                    }
+                );
+            });
 
         case 'role':
             console.log('Querying role table data...\n');
 
-            employees_db.query(`SELECT id, title, salary FROM role`, (error, results) =>
-                {
-                    error ? console.log(error) : console.table(results);
-                }
-            );
-            break;
+            return new Promise( (resolve, reject) =>
+            {
+                employees_db.query(`SELECT id, title, salary FROM role`, (error, results) =>
+                    {
+                        if (error) 
+                        {
+                            console.log(error);
+                            return reject(error);
+                        }
+
+                        console.log(results);
+                        return resolve(results);
+                    }
+                );
+            });
 
         case 'department':
             console.log('Querying department table data...\n');
 
-            employees_db.query(`SELECT id, name FROM department`, (error, results) =>
-                {
-                    error ? console.log(error) : console.log(results);
-                }
-            );
-            break;
+            return new Promise( (resolve, reject) =>
+            {
+                employees_db.query(`SELECT id, name FROM department`, (error, results) =>
+                    {
+                        if (error) 
+                        {
+                            console.log(error);
+                            return reject(error);
+                        }
+
+                        console.log(results);
+                        return resolve(results);
+                    }
+                );
+            });
     }
 }
 

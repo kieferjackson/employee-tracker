@@ -1,6 +1,7 @@
 const inq = require('inquirer');
 const qsql = require('./library/query_sql');
 const af = require('./library/add_functions.js');
+const cTable = require('console.table');
 
 function displayMenuOptions()
 {
@@ -24,32 +25,31 @@ function displayMenuOptions()
         }
     ];
     
-    inq.prompt(menu_options).then( (answers) =>
+    inq.prompt(menu_options).then( async (answers) =>
     {
         const { choice } = answers;
 
         switch (choice)
         {
             // Options for viewing (employee, role, and department tables)
-            case 'View All Employees': qsql.get_table_data('employee'); break;
-            case 'View All Roles': qsql.get_table_data('role'); break;
-            case 'View All Departments': qsql.get_table_data('department'); break;
+            case 'View All Employees':      console.table( await qsql.get_table_data('employee') );     break;
+            case 'View All Roles':          console.table( await qsql.get_table_data('role') );         break;
+            case 'View All Departments':    console.table( await qsql.get_table_data('department') );   break;
 
             // Options for Adding Data to Tables
-            case 'Add Employee': af.addEmployee(); break;
-            case 'Add Role': af.addRole(); break;
-            case 'Add Department': af.addDepartment(); break;
+            case 'Add Employee':    af.addEmployee();   break;
+            case 'Add Role':        af.addRole();       break;
+            case 'Add Department':  af.addDepartment(); break;
 
             // Option for Updating Employee Role
-            case 'Update Employee Role': af.updateEmployeeRole(); break;
+            case 'Update Employee Role':    af.updateEmployeeRole(); break;
         }
     });
 }
 
-async function init()
+function init()
 {
     displayMenuOptions();
-    // console.log('The returned result of the query: ', await qsql.get_role_titles());
 }
 
 init();

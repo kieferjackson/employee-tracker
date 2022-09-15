@@ -1,6 +1,6 @@
 const inq = require('inquirer');
 const qsql = require('./library/query_sql');
-const qsql = require('./library/add_functions.js');
+const af = require('./library/add_functions.js');
 
 function displayMenuOptions()
 {
@@ -36,13 +36,20 @@ function displayMenuOptions()
             case 'View All Departments': qsql.get_table_data('department'); break;
 
             // Options for Adding Data to Tables
-            case 'Add Employee': addEmployee(); break;
-            case 'Add Role': addRole(); break;
-            case 'Add Department': addDepartment(); break;
+            case 'Add Employee': af.addEmployee(); break;
+            case 'Add Role': af.addRole(); break;
+            case 'Add Department': af.addDepartment(); break;
 
             // Option for Updating Employee Role
-            case 'Update Employee Role': updateEmployeeRole(); break;
+            case 'Update Employee Role': af.updateEmployeeRole(); break;
         }
     });
 }
 
+async function init()
+{
+    displayMenuOptions();
+    // console.log('The returned result of the query: ', await qsql.get_role_titles());
+}
+
+init();

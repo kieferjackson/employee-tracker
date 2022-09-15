@@ -1,7 +1,7 @@
 const inq = require('inquirer');
-const qsql = require('./library/query_sql');
+const qsql = require('./query_sql');
 
-function addEmployee()
+async function addEmployee()
 {
     // Array containing all questions for adding a new employee
     const add_employee_questions = 
@@ -22,7 +22,7 @@ function addEmployee()
         {
             type: 'list',
             message: 'What is your role?',
-            choices: qsql.get_role_titles(),
+            choices: await qsql.get_role_titles(),
             name: 'role'
         },
         // Employee's Manager
@@ -34,10 +34,13 @@ function addEmployee()
         }
     ];
 
-    qsql.qadd('employee');
+    inq.prompt(add_employee_questions).then( (answers) =>
+    {
+        qsql.qadd('employee', answers);
+    });
 }
 
-function addRole()
+async function addRole()
 {
     // Array containing all questions for adding a new role
     const add_role_questions = 
@@ -58,7 +61,7 @@ function addRole()
         {
             type: 'list',
             message: 'Which department does the role belong to?',
-            choices: qsql.get_role_titles(),
+            choices: await qsql.get_departments(),
             name: 'role_department'
         }
     ];
@@ -74,7 +77,7 @@ function addDepartment()
         // Department Name
         {
             type: 'input',
-            message: "What is the department's name",
+            message: "What is the department's name?",
             name: 'name'
         }
     ];

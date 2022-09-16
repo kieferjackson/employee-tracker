@@ -243,12 +243,21 @@ function qadd(table_to_query, data)
         case 'department':
             const { name } = data;
 
-            employees_db.query(`INSERT INTO department (name) VALUES ('${name}')`, (error, results) =>
-                {
-                    error ? console.log(error) : console.log(`The ${name} Department was successfully added.`);
-                }
-            );
-            break;
+            return new Promise( (resolve, reject) =>
+            {
+                employees_db.query(`INSERT INTO department (name) VALUES ('${name}')`, (error, results) =>
+                    {
+                        if (error) 
+                        {
+                            console.log(error);
+                            return reject(error);
+                        }
+
+                        console.log(`The ${name} Department was successfully added.`);
+                        return resolve(results);
+                    }
+                );
+            });
     }
 }
 

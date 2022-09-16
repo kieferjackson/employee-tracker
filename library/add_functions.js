@@ -118,9 +118,12 @@ function addDepartment()
         }
     ];
 
-    inq.prompt(add_department_questions).then( (answers) =>
+    return new Promise( (resolve, reject) =>
     {
-        qsql.qadd('department', answers);
+        inq.prompt(add_department_questions).then( async (answers) =>
+        {
+            return resolve( await qsql.qadd('department', answers));
+        });
     });
 }
 

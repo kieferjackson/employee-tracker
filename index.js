@@ -42,7 +42,7 @@ function displayMenuOptions()
             case 'Add Department':  await af.addDepartment(); break;
 
             // Option for Updating Employee Role
-            case 'Update Employee Role':    af.updateEmployeeRole(); break;
+            case 'Update Employee Role':    await af.updateEmployeeRole(); break;
         }
 
         // Display the menu again to view options
@@ -53,7 +53,6 @@ function displayMenuOptions()
 async function init()
 {
     displayMenuOptions();
-    // console.log(await qsql.get_managers());
 }
 
 init();

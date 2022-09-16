@@ -154,6 +154,41 @@ function get_managers()
     });
 }
 
+function get_employees()
+{
+    function parseEmployeesArray(employees)
+    {
+        let parsedEmployees = { employees: [] };
+
+        // Combine first and last name for managers, and use their resultant full name as the key to access their ID
+        for (let i = 0 ; i < employees.length ; i++)
+        {
+            let full_name = `${employees[i].first_name} ${employees[i].last_name}`;
+            
+            parsedEmployees.employees[i] = full_name;
+            parsedEmployees[full_name] = employees[i].id;
+        }
+
+        return parsedEmployees;
+    }
+
+    return new Promise( (resolve, reject) =>
+    {
+        employees_db.query(`SELECT first_name, last_name, id FROM employee`, (error, results) =>
+            {
+                if (error) 
+                {
+                    console.log(error);
+                    return reject(error);
+                }
+
+                console.log(results);
+                return resolve(parseEmployeesArray(results));
+            }
+        );
+    });
+}
+
 function get_departments()
 {
     function parseDepartmentArray(departments)
@@ -261,4 +296,28 @@ function qadd(table_to_query, data)
     }
 }
 
-module.exports = { get_table_data, qadd, get_role_titles, get_managers, get_departments };
+function qupdateRole(data)
+{
+    const { employee_id, role_id, manager_id } = data;
+    const UPDATE_employee = `UPDATE employee`;
+    const SET_employee = `SET role_id = ${role_id}, manager_id = ${manager_id}`;
+    const WHERE_employee = `WHERE id = ${employee_id}`;
+
+    return new Promise( (resolve, reject) =>
+    {
+        employees_db.query(`${UPDATE_employee} ${SET_employee} ${WHERE_employee}`, (error, results) =>
+            {
+                if (error) 
+                {
+                    console.log(error);
+                    return reject(error);
+                }
+
+                console.log(`${data.employee} was successfully updated.`);
+                return resolve(results);
+            }
+        );
+    });
+}
+
+module.exports = { get_table_data, qadd, qupdateRole, get_role_titles, get_managers, get_employees, get_departments };

@@ -37,19 +37,23 @@ function displayMenuOptions()
             case 'View All Departments':    console.table( await qsql.get_table_data('department') );   break;
 
             // Options for Adding Data to Tables
-            case 'Add Employee':    af.addEmployee();   break;
+            case 'Add Employee':    await af.addEmployee();   break;
             case 'Add Role':        af.addRole();       break;
             case 'Add Department':  af.addDepartment(); break;
 
             // Option for Updating Employee Role
             case 'Update Employee Role':    af.updateEmployeeRole(); break;
         }
+
+        // Display the menu again to view options
+        displayMenuOptions();
     });
 }
 
-function init()
+async function init()
 {
     displayMenuOptions();
+    // console.log(await qsql.get_managers());
 }
 
 init();

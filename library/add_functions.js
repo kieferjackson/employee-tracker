@@ -3,6 +3,13 @@ const qsql = require('./query_sql');
 
 async function addEmployee()
 {
+    // Query for the Role Titles and Managers with their respective IDs
+    const roles_info = await qsql.get_role_titles();
+    const managers_info = await qsql.get_managers();
+    // Add option for employees without a manager
+    managers_info.managers.push('No manager at this time');
+
+
     // Array containing all questions for adding a new employee
     const add_employee_questions = 
     [
@@ -21,23 +28,42 @@ async function addEmployee()
         // Employee Role
         {
             type: 'list',
-            message: 'What is your role?',
-            choices: await qsql.get_role_titles(),
-            name: 'role'
+            message: 'What is your role title?',
+            choices: roles_info.titles,
+            name: 'title'
         },
         // Employee's Manager
         {
             type: 'list',
             message: 'Who is your manager?',
-            choices: qsql.get_managers(),
+            choices: managers_info.managers,
             name: 'manager'
         }
     ];
 
-    inq.prompt(add_employee_questions).then( (answers) =>
+    return new Promise( (resolve, reject) =>
     {
-        qsql.qadd('employee', answers);
+
+        inq.prompt(add_employee_questions).then( async (answers) =>
+        {
+            // Assign the ID of the given role by the using the role title as the key for roles_info
+            answers.role_id = roles_info[answers.title];
+
+            // Assign the ID of the given manager by the using the manager's name as the key for managers_info
+            if (answers.manager === 'No manager at this time')
+            {
+                answers.manager_id = 'NULL';
+            }
+            else
+            {
+                answers.manager_id = managers_info[answers.manager];
+            }
+
+            return resolve( await qsql.qadd('employee', answers));
+        });
     });
+
+    
 }
 
 async function addRole()

@@ -88,11 +88,15 @@ function get_role_titles()
 {
     function parseRoleArray(roles)
     {
-        let parsedRoles = [];
+        let parsedRoles = { titles: [] };
 
+        // Save all titles in their own array in the 'titles' property, and use that title as a key for its associated ID
         for (let i = 0 ; i < roles.length ; i++)
         {
-            parsedRoles[i] = roles[i].title;
+            let role_title = roles[i].title;
+
+            parsedRoles.titles[i] = role_title;
+            parsedRoles[role_title] = roles[i].id;
         }
 
         return parsedRoles;
@@ -100,7 +104,7 @@ function get_role_titles()
 
     return new Promise( (resolve, reject) =>
     {
-        employees_db.query(`SELECT title FROM role`, (error, results) =>
+        employees_db.query(`SELECT title, id FROM role`, (error, results) =>
             {
                 if (error) 
                 {
@@ -115,9 +119,39 @@ function get_role_titles()
     });
 }
 
-function get_departments()
+function get_managers()
 {
+    function parseManagersArray(managers)
+    {
+        let parsedManagers = { managers: [] };
 
+        // Combine first and last name for managers, and use their resultant full name as the key to access their ID
+        for (let i = 0 ; i < managers.length ; i++)
+        {
+            let full_name = `${managers[i].first_name} ${managers[i].last_name}`;
+            
+            parsedManagers.managers[i] = full_name;
+            parsedManagers[full_name] = managers[i].id;
+        }
+
+        return parsedManagers;
+    }
+
+    return new Promise( (resolve, reject) =>
+    {
+        employees_db.query(`SELECT first_name, last_name, id FROM employee WHERE manager_id IS NULL`, (error, results) =>
+            {
+                if (error) 
+                {
+                    console.log(error);
+                    return reject(error);
+                }
+
+                console.log(results);
+                return resolve(parseManagersArray(results));
+            }
+        );
+    });
 }
 
 /**
@@ -130,25 +164,25 @@ function qadd(table_to_query, data)
     switch(table_to_query)
     {
         case 'employee':
-            const { first_name, last_name, title, manager_fname, manager_lname } = data;
+            const { first_name, last_name, role_id, manager_id } = data;
+            const INSERT_INTO = 'INSERT INTO employee (first_name, last_name, role_id, manager_id)';
+            const VALUES_TO_INSERT = `VALUES ('${first_name}', '${last_name}', ${role_id}, ${manager_id});`;
 
-            // Query for the Role ID based on the response given
-            employees_db.query(`SELECT id FROM role WHERE title = '${title}'; SELECT id FROM employee WHERE first_name = '${manager_fname}' AND last_name = '${manager_lname}'`, (error, results) =>
-                {
-                    error ? console.log(error) : () =>
+            return new Promise( (resolve, reject) =>
+            {
+                employees_db.query(`${INSERT_INTO} ${VALUES_TO_INSERT}`, (error, results) =>
                     {
-                        role_id = results[0].id;
-                    }
-                }
-            );
+                        if (error) 
+                        {
+                            console.log(error);
+                            return reject(error);
+                        }
 
-            console.log(role_id);
-            // employees_db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id)`, (error, results) =>
-            //     {
-            //         error ? console.log(error) : console.table(results);
-            //     }
-            // );
-            break;
+                        console.log(`${first_name} ${last_name} was successfully added.`);
+                        return resolve(results);
+                    }
+                );
+            });
 
         case 'role':
             employees_db.query(`SELECT id, title, salary FROM role`, (error, results) =>
@@ -170,4 +204,4 @@ function qadd(table_to_query, data)
     }
 }
 
-module.exports = { get_table_data, qadd, get_role_titles };
+module.exports = { get_table_data, qadd, get_role_titles, get_managers };

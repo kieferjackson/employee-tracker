@@ -38,7 +38,7 @@ function displayMenuOptions()
 
             // Options for Adding Data to Tables
             case 'Add Employee':    await af.addEmployee();   break;
-            case 'Add Role':        af.addRole();       break;
+            case 'Add Role':        await af.addRole();       break;
             case 'Add Department':  af.addDepartment(); break;
 
             // Option for Updating Employee Role

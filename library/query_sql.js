@@ -154,6 +154,41 @@ function get_managers()
     });
 }
 
+function get_departments()
+{
+    function parseDepartmentArray(departments)
+    {
+        let parsedDepartments = { names: [] };
+
+        // Save all department names in their own array in the 'names' property, and use that name as a key for its associated ID
+        for (let i = 0 ; i < departments.length ; i++)
+        {
+            let department_name = departments[i].name;
+
+            parsedDepartments.names[i] = department_name;
+            parsedDepartments[department_name] = departments[i].id;
+        }
+
+        return parsedDepartments;
+    }
+
+    return new Promise( (resolve, reject) =>
+    {
+        employees_db.query(`SELECT name, id FROM department`, (error, results) =>
+            {
+                if (error) 
+                {
+                    console.log(error);
+                    return reject(error);
+                }
+
+                console.log(results);
+                return resolve(parseDepartmentArray(results));
+            }
+        );
+    });
+}
+
 /**
   * Adds a new data entry to a selected table
   * @param {string} table_to_query - The name of the desired MySQL table in the employees_db database
@@ -165,12 +200,12 @@ function qadd(table_to_query, data)
     {
         case 'employee':
             const { first_name, last_name, role_id, manager_id } = data;
-            const INSERT_INTO = 'INSERT INTO employee (first_name, last_name, role_id, manager_id)';
-            const VALUES_TO_INSERT = `VALUES ('${first_name}', '${last_name}', ${role_id}, ${manager_id});`;
+            const INSERT_INTO_employee = 'INSERT INTO employee (first_name, last_name, role_id, manager_id)';
+            const employee_VALUES_TO_INSERT = `VALUES ('${first_name}', '${last_name}', ${role_id}, ${manager_id});`;
 
             return new Promise( (resolve, reject) =>
             {
-                employees_db.query(`${INSERT_INTO} ${VALUES_TO_INSERT}`, (error, results) =>
+                employees_db.query(`${INSERT_INTO_employee} ${employee_VALUES_TO_INSERT}`, (error, results) =>
                     {
                         if (error) 
                         {
@@ -185,12 +220,25 @@ function qadd(table_to_query, data)
             });
 
         case 'role':
-            employees_db.query(`SELECT id, title, salary FROM role`, (error, results) =>
-                {
-                    error ? console.log(error) : console.table(results);
-                }
-            );
-            break;
+            const { title, salary, department_id } = data;
+            const INSERT_INTO_role = 'INSERT INTO role (title, salary, department_id)';
+            const role_VALUES_TO_INSERT = `VALUES ('${title}', ${salary}, ${department_id});`;
+
+            return new Promise( (resolve, reject) =>
+            {
+                employees_db.query(`${INSERT_INTO_role} ${role_VALUES_TO_INSERT}`, (error, results) =>
+                    {
+                        if (error) 
+                        {
+                            console.log(error);
+                            return reject(error);
+                        }
+
+                        console.log(`The ${title} role was successfully added.`);
+                        return resolve(results);
+                    }
+                );
+            });
 
         case 'department':
             const { name } = data;
@@ -204,4 +252,4 @@ function qadd(table_to_query, data)
     }
 }
 
-module.exports = { get_table_data, qadd, get_role_titles, get_managers };
+module.exports = { get_table_data, qadd, get_role_titles, get_managers, get_departments };

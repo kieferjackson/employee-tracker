@@ -43,7 +43,6 @@ async function addEmployee()
 
     return new Promise( (resolve, reject) =>
     {
-
         inq.prompt(add_employee_questions).then( async (answers) =>
         {
             // Assign the ID of the given role by the using the role title as the key for roles_info
@@ -62,12 +61,13 @@ async function addEmployee()
             return resolve( await qsql.qadd('employee', answers));
         });
     });
-
-    
 }
 
 async function addRole()
 {
+    // Query for Departments for names and respective IDs
+    const departments_info = await qsql.get_departments();
+
     // Array containing all questions for adding a new role
     const add_role_questions = 
     [
@@ -87,12 +87,22 @@ async function addRole()
         {
             type: 'list',
             message: 'Which department does the role belong to?',
-            choices: await qsql.get_departments(),
+            choices: departments_info.names,
             name: 'role_department'
         }
     ];
 
-    qsql.qadd('role');
+    return new Promise( (resolve, reject) =>
+    {
+
+        inq.prompt(add_role_questions).then( async (answers) =>
+        {
+            // Assign the ID of the given department by the using the department name as the key for departments_info
+            answers.department_id = departments_info[answers.role_department];
+
+            return resolve( await qsql.qadd('role', answers));
+        });
+    });
 }
 
 function addDepartment()

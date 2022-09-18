@@ -19,7 +19,8 @@ function displayMenuOptions()
                 'View All Roles',
                 'Add Role',
                 'View All Departments',
-                'Add Department'
+                'Add Department',
+                'Quit'
             ],
             name: 'choice'
         }
@@ -43,6 +44,9 @@ function displayMenuOptions()
 
             // Option for Updating Employee Role
             case 'Update Employee Role':    await af.updateEmployeeRole(); break;
+
+            // Exit the program
+            case 'Quit':    process.exit(0);
         }
 
         // Display the menu again to view options

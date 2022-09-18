@@ -38,7 +38,6 @@ function get_table_data (table_to_query)
                             return reject(error);
                         }
 
-                        console.log(results);
                         return resolve(results);
                     }
                 );
@@ -49,7 +48,7 @@ function get_table_data (table_to_query)
 
             return new Promise( (resolve, reject) =>
             {
-                employees_db.query(`SELECT id, title, salary FROM role`, (error, results) =>
+                employees_db.query(`SELECT role.id, role.title, role.salary, department.name AS department FROM role JOIN department ON role.department_id = department.id`, (error, results) =>
                     {
                         if (error) 
                         {
@@ -57,7 +56,6 @@ function get_table_data (table_to_query)
                             return reject(error);
                         }
 
-                        console.log(results);
                         return resolve(results);
                     }
                 );
@@ -76,7 +74,6 @@ function get_table_data (table_to_query)
                             return reject(error);
                         }
 
-                        console.log(results);
                         return resolve(results);
                     }
                 );

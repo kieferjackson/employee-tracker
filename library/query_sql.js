@@ -112,7 +112,6 @@ function get_role_titles()
                     return reject(error);
                 }
 
-                console.log(results);
                 return resolve(parseRoleArray(results));
             }
         );
@@ -147,7 +146,6 @@ function get_managers()
                     return reject(error);
                 }
 
-                console.log(results);
                 return resolve(parseManagersArray(results));
             }
         );
@@ -182,7 +180,6 @@ function get_employees()
                     return reject(error);
                 }
 
-                console.log(results);
                 return resolve(parseEmployeesArray(results));
             }
         );
@@ -217,7 +214,6 @@ function get_departments()
                     return reject(error);
                 }
 
-                console.log(results);
                 return resolve(parseDepartmentArray(results));
             }
         );
@@ -231,68 +227,55 @@ function get_departments()
   */
 function qadd(table_to_query, data)
 {
+    function makeQueryPromise(query_parameters, success_msg)
+    {
+        return new Promise( (resolve, reject) =>
+        {
+            employees_db.query(query_parameters, (error, results) =>
+                {
+                    if (error) 
+                    {
+                        console.log(error);
+                        return reject(error);
+                    }
+
+                    console.log(success_msg);
+                    return resolve(results);
+                }
+            );
+        });
+    }
+
     switch(table_to_query)
     {
         case 'employee':
             const { first_name, last_name, role_id, manager_id } = data;
+            // Set up parameters for employee query
             const INSERT_INTO_employee = 'INSERT INTO employee (first_name, last_name, role_id, manager_id)';
             const employee_VALUES_TO_INSERT = `VALUES ('${first_name}', '${last_name}', ${role_id}, ${manager_id});`;
 
-            return new Promise( (resolve, reject) =>
-            {
-                employees_db.query(`${INSERT_INTO_employee} ${employee_VALUES_TO_INSERT}`, (error, results) =>
-                    {
-                        if (error) 
-                        {
-                            console.log(error);
-                            return reject(error);
-                        }
+            let emp_success_msg = `${first_name} ${last_name} was successfully added.`;
 
-                        console.log(`${first_name} ${last_name} was successfully added.`);
-                        return resolve(results);
-                    }
-                );
-            });
+            // Return promise with the database query including query parameters and success message
+            return makeQueryPromise(`${INSERT_INTO_employee} ${employee_VALUES_TO_INSERT}`, emp_success_msg); 
 
         case 'role':
             const { title, salary, department_id } = data;
             const INSERT_INTO_role = 'INSERT INTO role (title, salary, department_id)';
             const role_VALUES_TO_INSERT = `VALUES ('${title}', ${salary}, ${department_id});`;
 
-            return new Promise( (resolve, reject) =>
-            {
-                employees_db.query(`${INSERT_INTO_role} ${role_VALUES_TO_INSERT}`, (error, results) =>
-                    {
-                        if (error) 
-                        {
-                            console.log(error);
-                            return reject(error);
-                        }
+            let rol_success_msg = `The ${title} role was successfully added.`;
 
-                        console.log(`The ${title} role was successfully added.`);
-                        return resolve(results);
-                    }
-                );
-            });
+            // Return promise with the database query including query parameters and success message
+            return makeQueryPromise(`${INSERT_INTO_role} ${role_VALUES_TO_INSERT}`, rol_success_msg); 
 
         case 'department':
             const { name } = data;
 
-            return new Promise( (resolve, reject) =>
-            {
-                employees_db.query(`INSERT INTO department (name) VALUES ('${name}')`, (error, results) =>
-                    {
-                        if (error) 
-                        {
-                            console.log(error);
-                            return reject(error);
-                        }
+            let dep_success_msg = `The ${name} Department was successfully added.`;
 
-                        console.log(`The ${name} Department was successfully added.`);
-                        return resolve(results);
-                    }
-                );
-            });
+            // Return promise with the database query including query parameters and success message
+            return makeQueryPromise(`INSERT INTO department (name) VALUES ('${name}')`, dep_success_msg); 
     }
 }
 

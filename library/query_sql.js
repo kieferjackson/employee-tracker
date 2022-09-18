@@ -22,15 +22,23 @@ function get_table_data (table_to_query)
     {
         case 'employee':
             console.log('Querying employee table data...\n');
-            // Preset Search Queries
+            // Select employee id, name, title, salary, department, and combine manager name to display full name in one column
             const sq_employee = 'employee.id, employee.first_name, employee.last_name';
             const sq_role = 'role.title, role.salary';
+            const sq_department = 'department.name AS department';
+            const sq_manager = `CONCAT(manager.first_name, ' ', manager.last_name) AS manager`;
+
+            // Join role, and employee, and department tables; Self join with employees (manager) based on manager id, include NULL
             const jq_role = 'JOIN role ON employee.role_id = role.id';
             const jq_department = 'JOIN department ON role.department_id = department.id';
+            const jq_manager = `LEFT JOIN employee manager ON employee.manager_id = manager.id OR employee.manager_id = 'NULL'`;
+
+            const SEL_EMPLOYEE = `${sq_employee}, ${sq_role}, ${sq_department}, ${sq_manager}`;
+            const JOIN_EMPLOYEE = `${jq_role} ${jq_department} ${jq_manager}`;
 
             return new Promise( (resolve, reject) =>
             {
-                employees_db.query(`SELECT ${sq_employee}, ${sq_role} FROM employee ${jq_role} ${jq_department}`, (error, results) =>
+                employees_db.query(`SELECT ${SEL_EMPLOYEE} FROM employee ${JOIN_EMPLOYEE}`, (error, results) =>
                     {
                         if (error) 
                         {

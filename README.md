@@ -1,5 +1,12 @@
 # Employee Tracker
 
+[Application Video Demonstration](https://drive.google.com/file/d/1YaanwkYKZ2sUPbcN2ah-NP-REkksGgAJ/view)
+
+Here's a screenshot of the finished application:
+![Screenshot of the application in use, displaying employee information in addition to updating an employee's role](./assets/images/screenshot.png)
+
+---
+
 ## Description
 Viewing, Adding, and Updating employee information stored in a MySQL database.
 
